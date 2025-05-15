@@ -249,7 +249,7 @@ export default function TermsPage() {
                            <br />
                            Email: info@massclaimcenter.com
                            <br />
-                           Phone: (123) 456-7890
+                           Phone: 415-251-0104
                         </p>
                      </div>
 
