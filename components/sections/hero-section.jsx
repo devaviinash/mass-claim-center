@@ -62,7 +62,7 @@ export default function HeroSection() {
                         className="w-full h-auto rounded-lg shadow-lg"
                      />
                      <div className="absolute -bottom-6 -right-6 bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg">
-                        <p className="font-semibold">30+ Years of Experience</p>
+                        <p className="font-semibold">3+ Years of Experience</p>
                      </div>
                   </div>
                </motion.div>
