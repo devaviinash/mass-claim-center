@@ -65,43 +65,13 @@ export default function ContactForm() {
       },
    });
 
-   const onSubmit = async (data) => {
-      setIsSubmitting(true);
+   const onSubmit = (data) => {
+      toast.success("Form submitted successfully!", {
+         description: "We'll be in touch with you shortly.",
+         duration: 5000,
+      });
 
-      try {
-         // Get TrustedForm certificate URL
-         const certUrl =
-            document.getElementById("xxTrustedFormCertUrl")?.value || "";
-
-         const response = await fetch("/api/contact", {
-            method: "POST",
-            headers: {
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-               ...data,
-               trustedFormCertificateUrl: certUrl,
-            }),
-         });
-
-         if (!response.ok) {
-            throw new Error("Failed to submit form");
-         }
-
-         toast.success("Form submitted successfully!", {
-            description: "We'll be in touch with you shortly.",
-            duration: 5000,
-         });
-
-         form.reset();
-      } catch (error) {
-         console.error(error);
-         toast.error("Failed to submit form", {
-            description: "Please try again later.",
-         });
-      } finally {
-         setIsSubmitting(false);
-      }
+      form.reset(); // Reset the form fields
    };
 
    return (
