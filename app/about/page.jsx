@@ -73,7 +73,7 @@ export default function AboutPage() {
                         className="rounded-lg shadow-xl w-full h-auto"
                      />
                      <div className="absolute -bottom-6 -right-6 bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg hidden md:block">
-                        <p className="font-semibold">3+ Years of Experience</p>
+                        <p className="font-semibold">19+ Years of Experience</p>
                      </div>
                   </div>
                </div>

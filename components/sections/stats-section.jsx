@@ -13,7 +13,7 @@ const stats = [
       delay: 0,
    },
    {
-      value: 3,
+      value: 19,
       suffix: "+",
       label: "Years Of Experience",
       delay: 0.1,

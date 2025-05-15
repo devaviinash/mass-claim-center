@@ -42,12 +42,24 @@ const formSchema = z.object({
 });
 
 const services = [
-   { value: "personal-injury", label: "Personal Injury Claims" },
-   { value: "mass-tort", label: "Mass Tort Litigation" },
-   { value: "product-liability", label: "Product Liability" },
-   { value: "environmental", label: "Environmental Law" },
-   { value: "medical-malpractice", label: "Medical Malpractice" },
-   { value: "consumer-protection", label: "Consumer Protection" },
+   { value: "hair-relaxer", label: "Hair Relaxer" },
+   { value: "rideshare", label: "Rideshare" },
+   { value: "nec", label: "NEC" },
+   { value: "afff", label: "AFFF" },
+   { value: "paraquat", label: "Paraquat" },
+   { value: "lds-lawsuit", label: "LDS Lawsuit" },
+   { value: "video-game-addiction", label: "Video Game Addiction" },
+   { value: "round-up", label: "Round Up" },
+   { value: "talcum", label: "Talcum" },
+   { value: "md-juvenile-detention", label: "MD Juvenile Detention" },
+   { value: "il-sex-abuse", label: "IL Sex Abuse" },
+   { value: "tylenol-apap", label: "Tylenol/APAP" },
+   { value: "car-accident-law", label: "Car Accident Law" },
+   { value: "zantac", label: "Zantac" },
+   { value: "ozempic", label: "Ozempic" },
+   { value: "depo-provera", label: "Depo Provera" },
+   { value: "mesothelioma", label: "Mesothelioma" },
+   { value: "la-wildfire", label: "LA Wildfire" },
 ];
 
 export default function ContactForm() {
