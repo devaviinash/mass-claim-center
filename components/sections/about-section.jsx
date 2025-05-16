@@ -21,7 +21,7 @@ export default function AboutSection() {
       <section ref={ref} className="py-20 bg-white dark:bg-gray-950">
          <div className="container mx-auto px-4 md:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-               <motion.div>
+               <motion.div className="relative">
                   <div className="relative">
                      <img
                         src="https://images.pexels.com/photos/5669619/pexels-photo-5669619.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -44,7 +44,15 @@ export default function AboutSection() {
                   </div>
                </motion.div>
 
-               <motion.div>
+               <motion.div
+                  variants={{
+                     hidden: { opacity: 0, x: 50 },
+                     visible: { opacity: 1, x: 0 },
+                  }}
+                  initial="hidden"
+                  animate={controls}
+                  transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+               >
                   <div className="space-y-6">
                      <div className="inline-block bg-blue-100 dark:bg-blue-900/30 px-4 py-1 rounded-full">
                         <p className="text-blue-700 dark:text-blue-300 font-medium text-sm">
