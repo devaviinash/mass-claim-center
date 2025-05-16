@@ -95,7 +95,7 @@ export default function AboutSection() {
                         </span>
                      </p>
                      <p className="text-3xl font-bold text-blue-600">
-                        19{" "}
+                        19+{" "}
                         <span className="text-2xl text-slate-700">
                            Years of Experience
                         </span>
