@@ -36,9 +36,9 @@ export default function NavBar() {
    return (
       <header
          className={cn(
-            "fixed top-0 left-0 right-0 m-2 rounded-lg z-50 transition-all duration-300",
+            "fixed top-0 left-0 right-0 rounded-lg  z-50 transition-all duration-300",
             isScrolled
-               ? "bg-white/40 dark:bg-gray-900/95 backdrop-blur-lg shadow-md py-3"
+               ? "bg-white/40 dark:bg-gray-900/95 backdrop-blur-sm shadow-md py-3"
                : "bg-transparent py-5"
          )}
       >
@@ -108,7 +108,7 @@ export default function NavBar() {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="md:hidden bg-white dark:bg-gray-900 shadow-lg"
+                  className="md:hidden bg-white dark:bg-gray-900 rounded-lg shadow-lg"
                >
                   <div className="container mx-auto px-4 py-4">
                      <nav className="flex flex-col space-y-4">

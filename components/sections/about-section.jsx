@@ -21,7 +21,16 @@ export default function AboutSection() {
       <section ref={ref} className="py-20 bg-white dark:bg-gray-950">
          <div className="container mx-auto px-4 md:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-               <motion.div className="relative">
+               <motion.div
+                  variants={{
+                     hidden: { opacity: 0, x: 0 },
+                     visible: { opacity: 1, x: 0 },
+                  }}
+                  initial="hidden"
+                  animate={controls}
+                  transition={{ duration: 0.1, ease: "easeOut" }}
+                  className="relative"
+               >
                   <div className="relative">
                      <img
                         src="https://images.pexels.com/photos/5669619/pexels-photo-5669619.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
@@ -30,7 +39,7 @@ export default function AboutSection() {
                      />
                      <div className="absolute inset-0 rounded-lg bg-gradient-to-tr from-blue-900/20 to-transparent"></div>
                   </div>
-                  <div className="absolute -bottom-6 -right-6 bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg hidden md:block">
+                  {/* <div className="absolute -bottom-6 -right-6 bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg hidden md:block">
                      <p className="text-3xl font-bold text-blue-600">19+</p>
                      <p className="text-gray-600 dark:text-gray-300">
                         Years Experience
@@ -41,17 +50,17 @@ export default function AboutSection() {
                      <p className="text-gray-600 dark:text-gray-300">
                         Clients Helped
                      </p>
-                  </div>
+                  </div> */}
                </motion.div>
 
                <motion.div
                   variants={{
-                     hidden: { opacity: 0, x: 50 },
+                     hidden: { opacity: 0, x: 0 },
                      visible: { opacity: 1, x: 0 },
                   }}
                   initial="hidden"
                   animate={controls}
-                  transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+                  transition={{ duration: 0.1, delay: 0.2, ease: "easeOut" }}
                >
                   <div className="space-y-6">
                      <div className="inline-block bg-blue-100 dark:bg-blue-900/30 px-4 py-1 rounded-full">
@@ -78,6 +87,18 @@ export default function AboutSection() {
                         justice. We strive to ensure that corporations are held
                         accountable for their actions and that victims receive
                         fair compensation for their suffering.
+                     </p>
+                     <p className="text-3xl font-bold text-blue-600">
+                        10k+{" "}
+                        <span className="text-2xl text-slate-700">
+                           Clients Helped
+                        </span>
+                     </p>
+                     <p className="text-3xl font-bold text-blue-600">
+                        19{" "}
+                        <span className="text-2xl text-slate-700">
+                           Years of Experience
+                        </span>
                      </p>
 
                      <div className="pt-4">
