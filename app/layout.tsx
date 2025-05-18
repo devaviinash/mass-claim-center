@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import NavBar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import Script from "next/script";
+import Er from "@/components/sections/Er";
 
 const inter = Inter({
    subsets: ["latin"],
@@ -19,8 +20,14 @@ const playfair = Playfair_Display({
    variable: "--font-playfair",
 });
 
+// export const metadata: Metadata = {
+//    title: "Mass Claim Center | Legal Marketing Firm",
+//    description:
+//       "Mass Claim Center is dedicated to connecting individuals who have been wronged by corporations with the compensation they deserve.",
+// };
+
 export const metadata: Metadata = {
-   title: "Mass Claim Center | Legal Marketing Firm",
+   title: "Website Inactive — Project Pending Finalization",
    description:
       "Mass Claim Center is dedicated to connecting individuals who have been wronged by corporations with the compensation they deserve.",
 };
@@ -33,7 +40,7 @@ export default function RootLayout({
    return (
       <html lang="en" suppressHydrationWarning>
          <head>
-            <script
+            {/* <script
                type="text/javascript"
                dangerouslySetInnerHTML={{
                   __html: `
@@ -51,10 +58,10 @@ export default function RootLayout({
             />
             <noscript>
                <img src="https://api.trustedform.com/ns.gif" alt="" />
-            </noscript>
+            </noscript> */}
          </head>
          <body className={`${inter.variable} ${playfair.variable} font-sans`}>
-            <ThemeProvider
+            {/* <ThemeProvider
                attribute="class"
                defaultTheme="light"
                enableSystem
@@ -64,7 +71,8 @@ export default function RootLayout({
                <main>{children}</main>
                <Footer />
                <Toaster />
-            </ThemeProvider>
+            </ThemeProvider> */}
+            <Er />
          </body>
       </html>
    );
