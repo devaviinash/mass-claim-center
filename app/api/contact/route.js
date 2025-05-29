@@ -57,8 +57,8 @@ export async function POST(req) {
       }
 
       const emailData = {
-         from: "avinash.app@resend.dev",
-         to: "avinashchavan127@gmail.com",
+         from: "massclaimcenter.com@resend.dev",
+         to: "massclaimcenter@gmail.com",
          subject: `New Contact Form Submission - ${service}`,
          html: `
             <h2 style="color: #333; font-size: 24px; margin-bottom: 20px;">New Contact Form Submission</h2>
