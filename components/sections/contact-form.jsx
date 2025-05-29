@@ -36,6 +36,18 @@ export default function ContactForm() {
       consent: false,
    });
 
+   // Function to wait for TrustedForm certificate URL
+   const waitForCertificateUrl = async (maxAttempts = 10, interval = 500) => {
+      for (let i = 0; i < maxAttempts; i++) {
+         const tfField = document.getElementById("xxTrustedFormCertUrl");
+         if (tfField && tfField.value) {
+            return tfField.value;
+         }
+         await new Promise((resolve) => setTimeout(resolve, interval));
+      }
+      return "No certificate URL generated - timeout";
+   };
+
    const handleChange = (e) => {
       const { name, value, type, checked } = e.target;
       setFormData((prev) => ({
@@ -56,9 +68,9 @@ export default function ContactForm() {
       setIsSubmitting(true);
 
       try {
-         const certUrl = document.querySelector(
-            '[name="xxTrustedFormCertUrl"]'
-         )?.value;
+         // Wait for certificate URL to be generated
+         const currentCertUrl = await waitForCertificateUrl();
+         console.log("TrustedForm Certificate URL:", currentCertUrl);
 
          const response = await fetch("/api/contact", {
             method: "POST",
@@ -67,7 +79,7 @@ export default function ContactForm() {
             },
             body: JSON.stringify({
                ...formData,
-               certUrl: certUrl || "No certificate URL generated",
+               certUrl: currentCertUrl,
             }),
          });
 
@@ -82,7 +94,6 @@ export default function ContactForm() {
             duration: 5000,
          });
 
-         // Reset form
          setFormData({
             fullName: "",
             email: "",
@@ -92,7 +103,10 @@ export default function ContactForm() {
             consent: false,
          });
       } catch (error) {
-         toast.error(error.message || "Something went wrong!");
+         console.error("Form submission error:", error);
+         toast.error(
+            error.message || "Failed to submit form. Please try again."
+         );
       } finally {
          setIsSubmitting(false);
       }
@@ -100,14 +114,14 @@ export default function ContactForm() {
 
    return (
       <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-         {/* Hidden TrustedForm field */}
-         <input
-            type="hidden"
-            id="xxTrustedFormCertUrl"
-            name="xxTrustedFormCertUrl"
-         />
-
          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Hidden input field for TrustedForm */}
+            <input
+               type="hidden"
+               name="xxTrustedFormCertUrl"
+               id="xxTrustedFormCertUrl"
+            />
+
             <div className="space-y-2">
                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   Full Name
@@ -196,27 +210,27 @@ export default function ContactForm() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder="Please describe your case briefly..."
+                  placeholder="Tell us about your case..."
                   required
-                  className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  rows={5}
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                />
             </div>
 
-            <div className="flex items-start space-x-3">
+            <div className="flex items-center space-x-2">
                <input
                   type="checkbox"
+                  id="consent"
                   name="consent"
                   checked={formData.consent}
-                  onChange={(e) =>
-                     setFormData((prev) => ({
-                        ...prev,
-                        consent: e.target.checked,
-                     }))
-                  }
+                  onChange={handleChange}
                   required
-                  className="mt-1 h-4 w-4 rounded border-gray-300"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                />
-               <label className="text-xs">
+               <label
+                  htmlFor="consent"
+                  className="text-sm text-gray-700 dark:text-gray-300"
+               >
                   By filling out the form, you are providing express consent by
                   electronic signature that you may be contacted by telephone
                   (via call and/or text messages) and/or email for marketing
@@ -235,12 +249,12 @@ export default function ContactForm() {
             <button
                type="submit"
                disabled={isSubmitting}
-               className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+               className="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
                {isSubmitting ? (
-                  <span className="flex items-center">
+                  <>
                      <svg
-                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -259,12 +273,13 @@ export default function ContactForm() {
                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                      </svg>
-                     Submitting...
-                  </span>
+                     Sending...
+                  </>
                ) : (
-                  <span className="flex items-center">
-                     Submit <Send className="ml-2 h-5 w-5" />
-                  </span>
+                  <>
+                     <Send className="mr-2 h-4 w-4" />
+                     Send Message
+                  </>
                )}
             </button>
          </form>

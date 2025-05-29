@@ -40,27 +40,7 @@ export default function RootLayout({
 }) {
    return (
       <html lang="en" suppressHydrationWarning>
-         <head>
-            <script
-               type="text/javascript"
-               dangerouslySetInnerHTML={{
-                  __html: `
-                     (function() {
-                        var tf = document.createElement('script');
-                        tf.type = 'text/javascript';
-                        tf.async = true;
-                        tf.src = ("https:" == document.location.protocol ? 'https' : 'http') +
-                        '://api.trustedform.com/trustedform.js?field=xxTrustedFormCertUrl&use_tagged_consent=true&l=' +
-                        new Date().getTime() + Math.random();
-                        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(tf, s);
-                     })();
-                  `,
-               }}
-            />
-            <noscript>
-               <img src="https://api.trustedform.com/ns.gif" alt="" />
-            </noscript>
-         </head>
+         <head>{/* TrustedForm script removed from here */}</head>
          <body className={`${inter.variable} ${playfair.variable} font-sans`}>
             <ThemeProvider
                attribute="class"
