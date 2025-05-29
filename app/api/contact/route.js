@@ -1,81 +1,71 @@
-import { z } from "zod";
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
 
-const contactFormSchema = z.object({
-   firstName: z.string().min(2, "First name must be at least 2 characters"),
-   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-   email: z.string().email("Please enter a valid email address"),
-   phone: z.string().min(10, "Please enter a valid phone number"),
-   address: z.string().optional(),
-   city: z.string().optional(),
-   state: z.string().optional(),
-   zip: z.string().optional(),
-   service: z.string(),
-   answers: z.record(z.string().or(z.array(z.string()))).optional(),
-   trustedFormCertificateUrl: z.string().optional(),
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(request) {
+export async function POST(req) {
    try {
-      // Get the form data from the request
-      const data = await request.json();
+      if (!process.env.RESEND_API_KEY) {
+         throw new Error("RESEND_API_KEY is not configured");
+      }
 
-      // Validate the form data
-      const validatedData = contactFormSchema.parse(data);
+      const body = await req.json();
+      console.log("Received form data:", body); // Debug log
 
-      // Simulate processing delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const { fullName, email, phone, service, message, certUrl } = body;
 
-      // Log the form data including the TrustedForm certificate URL
-      console.log("Form submission received:", validatedData);
-
-      // Here you would typically:
-      // 1. Save the data to your database
-      // 2. Send the lead to your CRM
-      // 3. Send a notification email
-      // 4. etc.
-
-      return new Response(
-         JSON.stringify({
-            success: true,
-            message: "Form submitted successfully",
-         }),
-         {
-            headers: {
-               "Content-Type": "application/json",
-            },
-         }
-      );
-   } catch (error) {
-      console.error("Error processing form submission:", error);
-
-      // If it's a validation error, return the validation messages
-      if (error instanceof z.ZodError) {
-         return new Response(
-            JSON.stringify({
-               success: false,
-               message: "Validation failed",
-               errors: error.errors,
-            }),
+      // Validate required fields including certUrl
+      if (!fullName || !email || !phone || !service || !message || !certUrl) {
+         return NextResponse.json(
             {
-               status: 400,
-               headers: {
-                  "Content-Type": "application/json",
-               },
-            }
+               error: "All fields are required including TrustedForm certificate",
+            },
+            { status: 400 }
          );
       }
 
-      return new Response(
-         JSON.stringify({
-            success: false,
-            message: "Failed to process form submission",
-         }),
-         {
-            status: 500,
-            headers: {
-               "Content-Type": "application/json",
-            },
-         }
+      // Validate phone number (allowing more flexible formats)
+      const phoneRegex = /^[0-9\s+()-]{10,}$/;
+      if (!phoneRegex.test(phone)) {
+         return NextResponse.json(
+            { error: "Invalid phone number format" },
+            { status: 400 }
+         );
+      }
+
+      const emailData = {
+         from: "avinash.app@resend.dev",
+         to: "avinashchavan127@gmail.com",
+         subject: `New Contact Form Submission - ${service}`,
+         html: `
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${fullName}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Service:</strong> ${service}</p>
+            <p><strong>Message:</strong> ${message}</p>
+            <p><strong>TrustedForm Certificate URL:</strong> <a href="${certUrl}">${certUrl}</a></p>
+         `,
+      };
+
+      console.log("Sending email with data:", emailData); // Debug log
+      const data = await resend.emails.send(emailData);
+      console.log("Email sent successfully:", data); // Debug log
+
+      return NextResponse.json({ success: true, data });
+   } catch (error) {
+      console.error("Contact form error details:", error);
+
+      if (error.message.includes("RESEND_API_KEY")) {
+         return NextResponse.json(
+            { error: "Email service not configured properly." },
+            { status: 500 }
+         );
+      }
+
+      return NextResponse.json(
+         { error: "Failed to send message. Please try again later." },
+         { status: 500 }
       );
    }
 }

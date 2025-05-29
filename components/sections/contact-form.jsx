@@ -1,89 +1,101 @@
 "use client";
 
 import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import {
-   Form,
-   FormControl,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-   Select,
-   SelectContent,
-   SelectItem,
-   SelectTrigger,
-   SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 
-const formSchema = z.object({
-   fullName: z
-      .string()
-      .min(2, { message: "Full name must be at least 2 characters" }),
-   email: z.string().email({ message: "Please enter a valid email address" }),
-   phone: z.string().min(10, { message: "Please enter a valid phone number" }),
-   service: z.string().min(1, { message: "Please select a service" }),
-   message: z
-      .string()
-      .min(10, { message: "Message must be at least 10 characters" }),
-   consent: z.boolean().refine((val) => val === true, {
-      message: "You must agree to the terms to continue",
-   }),
-});
-
 const services = [
-   { value: "hair-relaxer", label: "Hair Relaxer" },
-   { value: "rideshare", label: "Rideshare" },
-   { value: "nec", label: "NEC" },
-   { value: "afff", label: "AFFF" },
-   { value: "paraquat", label: "Paraquat" },
-   { value: "lds-lawsuit", label: "LDS Lawsuit" },
-   { value: "video-game-addiction", label: "Video Game Addiction" },
+   { value: "depo-provera", label: "Depo Provera" },
    { value: "round-up", label: "Round Up" },
    { value: "talcum", label: "Talcum" },
+   { value: "nec", label: "NEC" },
+   { value: "lds-lawsuit", label: "LDS Lawsuit" },
+   { value: "hair-relaxer", label: "Hair Relaxer" },
+   { value: "rideshare", label: "Rideshare" },
+   { value: "afff", label: "AFFF" },
+   { value: "paraquat", label: "Paraquat" },
+   { value: "video-game-addiction", label: "Video Game Addiction" },
    { value: "md-juvenile-detention", label: "MD Juvenile Detention" },
    { value: "il-sex-abuse", label: "IL Sex Abuse" },
    { value: "tylenol-apap", label: "Tylenol/APAP" },
    { value: "car-accident-law", label: "Car Accident Law" },
    { value: "zantac", label: "Zantac" },
    { value: "ozempic", label: "Ozempic" },
-   { value: "depo-provera", label: "Depo Provera" },
    { value: "mesothelioma", label: "Mesothelioma" },
    { value: "la-wildfire", label: "LA Wildfire" },
 ];
 
 export default function ContactForm() {
    const [isSubmitting, setIsSubmitting] = useState(false);
-
-   const form = useForm({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-         fullName: "",
-         email: "",
-         phone: "",
-         service: "",
-         message: "",
-         consent: false,
-      },
+   const [formData, setFormData] = useState({
+      fullName: "",
+      email: "",
+      phone: "",
+      service: "",
+      message: "",
+      consent: false,
    });
 
-   const onSubmit = (data) => {
-      toast.success("Form submitted successfully!", {
-         description: "We'll be in touch with you shortly.",
-         duration: 5000,
-      });
+   const handleChange = (e) => {
+      const { name, value, type, checked } = e.target;
+      setFormData((prev) => ({
+         ...prev,
+         [name]: type === "checkbox" ? checked : value,
+      }));
+   };
 
-      form.reset(); // Reset the form fields
+   const handleServiceChange = (value) => {
+      setFormData((prev) => ({
+         ...prev,
+         service: value,
+      }));
+   };
+
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+
+      try {
+         const certUrl = document.querySelector(
+            '[name="xxTrustedFormCertUrl"]'
+         )?.value;
+
+         const response = await fetch("/api/contact", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+               ...formData,
+               certUrl: certUrl || "No certificate URL generated",
+            }),
+         });
+
+         const data = await response.json();
+
+         if (!response.ok) {
+            throw new Error(data.error);
+         }
+
+         toast.success("Form submitted successfully!", {
+            description: "We'll be in touch with you shortly.",
+            duration: 5000,
+         });
+
+         // Reset form
+         setFormData({
+            fullName: "",
+            email: "",
+            phone: "",
+            service: "",
+            message: "",
+            consent: false,
+         });
+      } catch (error) {
+         toast.error(error.message || "Something went wrong!");
+      } finally {
+         setIsSubmitting(false);
+      }
    };
 
    return (
@@ -95,174 +107,167 @@ export default function ContactForm() {
             name="xxTrustedFormCertUrl"
          />
 
-         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-               <FormField
-                  control={form.control}
+         <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  Full Name
+               </label>
+               <input
+                  type="text"
                   name="fullName"
-                  render={({ field }) => (
-                     <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                           <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                     </FormItem>
-                  )}
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  required
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                />
+            </div>
 
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                     control={form.control}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none">
+                     Email
+                  </label>
+                  <input
+                     type="email"
                      name="email"
-                     render={({ field }) => (
-                        <FormItem>
-                           <FormLabel>Email</FormLabel>
-                           <FormControl>
-                              <Input
-                                 type="email"
-                                 placeholder="john@example.com"
-                                 {...field}
-                              />
-                           </FormControl>
-                           <FormMessage />
-                        </FormItem>
-                     )}
-                  />
-
-                  <FormField
-                     control={form.control}
-                     name="phone"
-                     render={({ field }) => (
-                        <FormItem>
-                           <FormLabel>Phone</FormLabel>
-                           <FormControl>
-                              <Input placeholder="(123) 456-7890" {...field} />
-                           </FormControl>
-                           <FormMessage />
-                        </FormItem>
-                     )}
+                     value={formData.email}
+                     onChange={handleChange}
+                     placeholder="john@example.com"
+                     required
+                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                </div>
 
-               <FormField
-                  control={form.control}
-                  name="service"
-                  render={({ field }) => (
-                     <FormItem>
-                        <FormLabel>Service</FormLabel>
-                        <Select
-                           onValueChange={field.onChange}
-                           defaultValue={field.value}
-                        >
-                           <FormControl>
-                              <SelectTrigger>
-                                 <SelectValue placeholder="Select a service" />
-                              </SelectTrigger>
-                           </FormControl>
-                           <SelectContent>
-                              {services.map((service) => (
-                                 <SelectItem
-                                    key={service.value}
-                                    value={service.value}
-                                 >
-                                    {service.label}
-                                 </SelectItem>
-                              ))}
-                           </SelectContent>
-                        </Select>
-                        <FormMessage />
-                     </FormItem>
-                  )}
-               />
+               <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none">
+                     Phone
+                  </label>
+                  <input
+                     type="tel"
+                     name="phone"
+                     value={formData.phone}
+                     onChange={handleChange}
+                     placeholder="(123) 456-7890"
+                     required
+                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  />
+               </div>
+            </div>
 
-               <FormField
-                  control={form.control}
+            <div className="space-y-2">
+               <label className="text-sm font-medium leading-none">
+                  Service
+               </label>
+               <div className="relative">
+                  <select
+                     name="service"
+                     value={formData.service}
+                     onChange={(e) => handleServiceChange(e.target.value)}
+                     required
+                     className="appearance-none w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-gray-900 dark:text-gray-100 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                     <option value="" disabled>
+                        Select a service
+                     </option>
+                     {services.map((service) => (
+                        <option
+                           key={service.value}
+                           value={service.value}
+                           className="py-2"
+                        >
+                           {service.label}
+                        </option>
+                     ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                     </svg>
+                  </div>
+               </div>
+            </div>
+
+            <div className="space-y-2">
+               <label className="text-sm font-medium leading-none">
+                  Message
+               </label>
+               <textarea
                   name="message"
-                  render={({ field }) => (
-                     <FormItem>
-                        <FormLabel>Message</FormLabel>
-                        <FormControl>
-                           <Textarea
-                              placeholder="Please describe your case briefly..."
-                              className="min-h-[120px]"
-                              {...field}
-                           />
-                        </FormControl>
-                        <FormMessage />
-                     </FormItem>
-                  )}
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Please describe your case briefly..."
+                  required
+                  className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                />
+            </div>
 
-               <FormField
-                  control={form.control}
+            <div className="flex items-start space-x-3">
+               <input
+                  type="checkbox"
                   name="consent"
-                  render={({ field }) => (
-                     <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                           <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                           />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                           <FormLabel className="text-xs">
-                              By filling out the form, you are providing express
-                              consent by electronic signature that you may be
-                              contacted by telephone (via call and/or text
-                              messages) and/or email for marketing purposes by
-                              massclaimclaimcentre.com, its subsidiaries and
-                              affiliates or an independent lawyer using the
-                              phone number and/or email address you have
-                              provided to massclaimcentre.com, even if your
-                              phone number is listed on a Do Not Call Registry,
-                              including state and federal lists. You further
-                              agree that such contact may be made using an
-                              automatic telephone dialing system and/or
-                              prerecorded voice (message and data rates may
-                              apply). Your consent is not a condition of
-                              purchase. By continuing, you agree to the terms of
-                              the disclosures above.
-                           </FormLabel>
-                           <FormMessage />
-                        </div>
-                     </FormItem>
-                  )}
+                  checked={formData.consent}
+                  onChange={(e) =>
+                     setFormData((prev) => ({
+                        ...prev,
+                        consent: e.target.checked,
+                     }))
+                  }
+                  required
+                  className="mt-1 h-4 w-4 rounded border-gray-300"
                />
+               <label className="text-xs">
+                  By filling out the form, you are providing express consent by
+                  electronic signature that you may be contacted by telephone
+                  (via call and/or text messages) and/or email for marketing
+                  purposes by massclaimclaimcentre.com, its subsidiaries and
+                  affiliates or an independent lawyer using the phone number
+                  and/or email address you have provided to massclaimcentre.com,
+                  even if your phone number is listed on a Do Not Call Registry,
+                  including state and federal lists. You further agree that such
+                  contact may be made using an automatic telephone dialing
+                  system and/or prerecorded voice (message and data rates may
+                  apply). Your consent is not a condition of purchase. By
+                  continuing, you agree to the terms of the disclosures above.
+               </label>
+            </div>
 
-               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                     <span className="flex items-center">
-                        <svg
-                           className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                           xmlns="http://www.w3.org/2000/svg"
-                           fill="none"
-                           viewBox="0 0 24 24"
-                        >
-                           <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                           ></circle>
-                           <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                           ></path>
-                        </svg>
-                        Submitting...
-                     </span>
-                  ) : (
-                     <span className="flex items-center">
-                        Submit <Send className="ml-2 h-5 w-5" />
-                     </span>
-                  )}
-               </Button>
-            </form>
-         </Form>
+            <button
+               type="submit"
+               disabled={isSubmitting}
+               className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            >
+               {isSubmitting ? (
+                  <span className="flex items-center">
+                     <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                     >
+                        <circle
+                           className="opacity-25"
+                           cx="12"
+                           cy="12"
+                           r="10"
+                           stroke="currentColor"
+                           strokeWidth="4"
+                        ></circle>
+                        <path
+                           className="opacity-75"
+                           fill="currentColor"
+                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                     </svg>
+                     Submitting...
+                  </span>
+               ) : (
+                  <span className="flex items-center">
+                     Submit <Send className="ml-2 h-5 w-5" />
+                  </span>
+               )}
+            </button>
+         </form>
       </div>
    );
 }

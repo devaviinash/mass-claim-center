@@ -45,13 +45,11 @@ export default function ServicesPage() {
                      >
                         <div className="relative order-1 lg:order-none">
                            <Image
-                              src={`https://placehold.co/600x400?text=${encodeURIComponent(
-                                 service.title
-                              )}`}
+                              src={service.image}
                               alt={service.title}
                               width={600}
                               height={400}
-                              className="rounded-xl shadow-lg object-cover w-full h-64 sm:h-80 lg:h-96 transition-transform duration-300 hover:scale-[1.02]"
+                              className="rounded-xl shadow-lg object-contain bg-blue-100 w-full h-72 sm:h-80 lg:h-96 transition-transform duration-300 hover:scale-[1.02]"
                               loading="lazy"
                            />
                         </div>

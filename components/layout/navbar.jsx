@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,14 @@ export default function NavBar() {
       >
          <div className="container mx-auto px-4 md:px-6">
             <nav className="flex items-center justify-between h-16 md:h-20">
-               <Link href="/" className="flex items-center space-x-2">
+               <Link href="/" className="flex items-center space-x-3">
+                  <Image
+                     src="/icon.png"
+                     alt="Mass Claim Center Logo"
+                     width={32}
+                     height={32}
+                     className="w-10 h-10"
+                  />
                   <span
                      className={cn(
                         "font-playfair text-xl md:text-2xl font-bold tracking-tight transition-colors duration-300",

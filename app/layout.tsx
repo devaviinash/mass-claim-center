@@ -13,7 +13,7 @@ const inter = Inter({
    display: "swap",
    variable: "--font-inter",
    preload: true,
-   adjustFontFallback: true
+   adjustFontFallback: true,
 });
 
 const playfair = Playfair_Display({
@@ -21,13 +21,16 @@ const playfair = Playfair_Display({
    display: "swap",
    variable: "--font-playfair",
    preload: true,
-   adjustFontFallback: true
+   adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
    title: "Mass Claim Center | Legal Marketing Firm",
    description:
       "Mass Claim Center is dedicated to connecting individuals who have been wronged by corporations with the compensation they deserve.",
+   icons: {
+      icon: "/icon.png",
+   },
 };
 
 export default function RootLayout({
@@ -42,16 +45,16 @@ export default function RootLayout({
                type="text/javascript"
                dangerouslySetInnerHTML={{
                   __html: `
-              (function() {
-                var tf = document.createElement('script');
-                tf.type = 'text/javascript';
-                tf.async = true;
-                tf.src = ("https:" == document.location.protocol ? 'https' : 'http') +
-                  '://api.trustedform.com/trustedform.js?field=xxTrustedFormCertUrl&use_tagged_consent=true&l=' +
-                  new Date().getTime() + Math.random();
-                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(tf, s);
-              })();
-            `,
+                     (function() {
+                        var tf = document.createElement('script');
+                        tf.type = 'text/javascript';
+                        tf.async = true;
+                        tf.src = ("https:" == document.location.protocol ? 'https' : 'http') +
+                        '://api.trustedform.com/trustedform.js?field=xxTrustedFormCertUrl&use_tagged_consent=true&l=' +
+                        new Date().getTime() + Math.random();
+                        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(tf, s);
+                     })();
+                  `,
                }}
             />
             <noscript>
